@@ -14,7 +14,10 @@ export const DeleteModal = ({ type, deleteMode, setDeleteMode }) => {
           comment and can't be undone.
         </p>
         <div className="flex justify-around">
-          <button className="bg-gray-400 text-white py-2 px-4 rounded">
+          <button
+            onClick={() => setDeleteMode(false)}
+            className="bg-gray-400 text-white py-2 px-4 rounded"
+          >
             No
           </button>
           <button

@@ -1,15 +1,21 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Counter, DeleteModal } from "../../components";
 import { selectCurrentUser } from "../../features/currentuserSlice";
 import imgReply from "../../images/icon-reply.svg";
 import iconDelete from "../../images/icon-delete.svg";
 import iconEdit from "../../images/icon-edit.svg";
+import { editComment } from "../../features/commentSlice";
+import moment from "moment/moment";
 
 export const Comment = ({ data, type, parentId }) => {
   const { content, user, createdAt } = data;
   const currentUser = useSelector(selectCurrentUser);
   const [deleteMode, setDeleteMode] = useState({ num: null });
+  const [editMode, setEditMode] = useState({ num: null });
+  const [newContent, setNewContent] = useState("");
+
+  const dispatch = useDispatch();
 
   return (
     <>
@@ -28,20 +34,50 @@ export const Comment = ({ data, type, parentId }) => {
               you
             </span>
           ) : null}
-          <span className="text-gray-400">{createdAt}</span>
+          <span className="text-gray-400">
+            {createdAt.length >= 16 ? moment(createdAt).fromNow() : createdAt}
+          </span>
         </div>
 
         {/* content  */}
-        {type == "reply" ? (
-          <div>
-            <span className="font-semibold text-blue-500">
-              @{data.replyingTo + ` `}
-            </span>
-            <span className="text-gray-500">{content}</span>
+        {editMode.num ? (
+          <div className="flex flex-col justify-end items-end gap-2">
+            <textarea
+              defaultValue={content}
+              className="border-2 border-lightGray rounded-xl w-full resize-none h-32 focus:outline-none py-3 px-2 text-grayishBlue scrollbar"
+              onChange={(e) => setNewContent(e.target.value)}
+            />
+            <button
+              onClick={() => {
+                dispatch(
+                  editComment({
+                    id: editMode.num,
+                    content: newContent,
+                    type,
+                  })
+                );
+                setNewContent("");
+                setEditMode(false);
+              }}
+              className="bg-blue-500 rounded-lg py-2 px-4 text-white font-bold"
+            >
+              Update
+            </button>
           </div>
         ) : (
           <div>
-            <p className="text-gray-500">{content}</p>
+            {type == "reply" ? (
+              <div>
+                <span className="font-semibold text-blue-500">
+                  @{data.replyingTo + ` `}
+                </span>
+                <span className="text-gray-500">{content}</span>
+              </div>
+            ) : (
+              <div>
+                <p className="text-gray-500">{content}</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -68,7 +104,12 @@ export const Comment = ({ data, type, parentId }) => {
                 />
               )}
 
-              <div className="flex gap-1 justify-center items-center">
+              <div
+                className={`flex gap-1 justify-center items-center ${
+                  editMode.num && "cursor-not-allowed opacity-50"
+                }`}
+                onClick={() => setEditMode({ num: data.id })}
+              >
                 <img src={iconEdit} />
                 <span>Edit</span>
               </div>

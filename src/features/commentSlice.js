@@ -22,9 +22,26 @@ export const commentSlice = createSlice({
         );
       }
     },
+    editComment: (state, action) => {
+      if (action.payload.type === "comments") {
+        state.value.map((comment) => {
+          if (comment.id === action.payload.id) {
+            comment.content = action.payload.content;
+          }
+        });
+      } else if (action.payload.type === "reply") {
+        state.value.map((comment) =>
+          comment.replies.map((reply) => {
+            if (reply.id === action.payload.id) {
+              reply.content = action.payload.content;
+            }
+          })
+        );
+      }
+    },
   },
 });
 
-export const { addComment, deleteComment } = commentSlice.actions;
+export const { addComment, deleteComment, editComment } = commentSlice.actions;
 export const selectComment = (state) => state.comment.value;
 export default commentSlice.reducer;

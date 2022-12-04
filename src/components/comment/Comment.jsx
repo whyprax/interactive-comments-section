@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Counter } from "../../components";
+import { Counter, DeleteModal } from "../../components";
 import { selectCurrentUser } from "../../features/currentuserSlice";
 import imgReply from "../../images/icon-reply.svg";
 import iconDelete from "../../images/icon-delete.svg";
@@ -9,6 +9,7 @@ import iconEdit from "../../images/icon-edit.svg";
 export const Comment = ({ data, type, parentId }) => {
   const { content, user, createdAt } = data;
   const currentUser = useSelector(selectCurrentUser);
+  const [deleteMode, setDeleteMode] = useState({ num: null });
 
   return (
     <>
@@ -51,10 +52,22 @@ export const Comment = ({ data, type, parentId }) => {
           </div>
           {currentUser.username === user.username ? (
             <div className="flex justify-center items-center gap-4 cursor-pointer">
-              <div className="flex gap-1 justify-center items-center">
+              <div
+                className="flex gap-1 justify-center items-center"
+                onClick={() => setDeleteMode({ num: data.id })}
+              >
                 <img src={iconDelete} />
                 <span>Delete</span>
               </div>
+
+              {deleteMode.num && (
+                <DeleteModal
+                  type={type}
+                  deleteMode={deleteMode}
+                  setDeleteMode={setDeleteMode}
+                />
+              )}
+
               <div className="flex gap-1 justify-center items-center">
                 <img src={iconEdit} />
                 <span>Edit</span>

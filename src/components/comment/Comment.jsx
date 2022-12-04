@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { Counter } from "../../components";
 import { selectCurrentUser } from "../../features/currentuserSlice";
 import imgReply from "../../images/icon-reply.svg";
+import iconDelete from "../../images/icon-delete.svg";
+import iconEdit from "../../images/icon-edit.svg";
 
 export const Comment = ({ data, type, parentId }) => {
   const { content, user, createdAt } = data;
@@ -29,19 +31,41 @@ export const Comment = ({ data, type, parentId }) => {
         </div>
 
         {/* content  */}
-        <div>
-          <p className="text-gray-500">{content}</p>
-        </div>
+        {type == "reply" ? (
+          <div>
+            <span className="font-semibold text-blue-500">
+              @{data.replyingTo + ` `}
+            </span>
+            <span className="text-gray-500">{content}</span>
+          </div>
+        ) : (
+          <div>
+            <p className="text-gray-500">{content}</p>
+          </div>
+        )}
 
         {/* footer */}
         <div className="flex justify-between items-center">
           <div>
             <Counter data={data} type="comments" />
           </div>
-          <div className="flex justify-center items-center gap-2 cursor-pointer">
-            <img src={imgReply} />
-            <span className="text-blue-800 font-bold">Reply</span>
-          </div>
+          {currentUser.username === user.username ? (
+            <div className="flex justify-center items-center gap-4 cursor-pointer">
+              <div className="flex gap-1 justify-center items-center">
+                <img src={iconDelete} />
+                <span>Delete</span>
+              </div>
+              <div className="flex gap-1 justify-center items-center">
+                <img src={iconEdit} />
+                <span>Edit</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-center items-center gap-2 cursor-pointer">
+              <img src={imgReply} />
+              <span className="text-blue-800 font-bold">Reply</span>
+            </div>
+          )}
         </div>
       </div>
     </>

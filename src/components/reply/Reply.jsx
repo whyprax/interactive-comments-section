@@ -1,13 +1,19 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addComment, selectComment } from "../../features/commentSlice";
+import { replyComment, selectComment } from "../../features/commentSlice";
 import { selectCurrentUser } from "../../features/currentuserSlice";
 
-export const AddComments = () => {
-  const [newContent, setNewContent] = useState("");
+export const Reply = ({
+  type,
+  parentId,
+  data,
+  newContent,
+  setNewContent,
+  setReplyMode,
+}) => {
+  const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
   const commentList = useSelector(selectComment);
-  const dispatch = useDispatch();
 
   const getNewId = () => {
     const com = Math.max(...commentList.map((comment) => Math.max(comment.id)));
@@ -22,26 +28,34 @@ export const AddComments = () => {
   };
 
   return (
-    <div className="bg-gray-100 m-2 w-full mt-5 rounded-2xl border-1 border-gray-300 p-5 flex flex-col gap-6">
+    <div className="bg-gray-100 m-2 w-full rounded-2xl border-1 border-gray-300 p-5 flex flex-col gap-6">
       <textarea
-        value={newContent}
+        defaultChecked={newContent}
+        placeholder={`@${data.user.username}`}
         onChange={(e) => setNewContent(e.target.value)}
-        placeholder="Add a comment..."
         className="border-2 border-lightGray rounded-xl w-full resize-none h-32 focus:outline-none py-3 px-2 text-grayishBlue scrollbar"
       />
       <div className="flex justify-between items-center">
-        <img src={currentUser.image.png} width={32} className="rounded-full" />
+        <img
+          width={32}
+          height={32}
+          className="rounded-full"
+          src={currentUser.image.png}
+        />
         <button
           className={`${
             newContent ? "bg-blue-500" : "bg-blue-200 cursor-not-allowed"
           } rounded-lg py-2 px-4 text-white font-bold`}
           onClick={() => {
             dispatch(
-              addComment({
+              replyComment({
                 id: getNewId(),
                 content: newContent,
                 createdAt: Date(),
                 score: 0,
+                parentId:
+                  type === "comments" ? data.id : type === "reply" && parentId,
+                replyingTo: data.user.username,
                 user: {
                   image: {
                     png: currentUser.image.png,
@@ -49,13 +63,12 @@ export const AddComments = () => {
                   },
                   username: currentUser.username,
                 },
-                replies: [],
               })
             );
-            setNewContent("");
+            setReplyMode(false);
           }}
         >
-          Send
+          Update
         </button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Counter, DeleteModal } from "../../components";
+import { Counter, DeleteModal, Reply } from "../../components";
 import { selectCurrentUser } from "../../features/currentuserSlice";
 import imgReply from "../../images/icon-reply.svg";
 import iconDelete from "../../images/icon-delete.svg";
@@ -14,12 +14,13 @@ export const Comment = ({ data, type, parentId }) => {
   const [deleteMode, setDeleteMode] = useState({ num: null });
   const [editMode, setEditMode] = useState({ num: null });
   const [newContent, setNewContent] = useState("");
+  const [replyMode, setReplyMode] = useState({ num: null });
 
   const dispatch = useDispatch();
 
   return (
-    <>
-      <div className="bg-gray-100 m-2 w-5/6 rounded-2xl border-1 border-gray-300 py-8 px-5 flex flex-col gap-4">
+    <div className="flex flex-col justify-center items-center">
+      <div className="bg-gray-100 m-2 w-full rounded-2xl border-1 border-gray-300 py-8 px-5 flex flex-col gap-4">
         {/* user  */}
         <div className="flex justify-start items-center gap-4">
           <img
@@ -65,7 +66,7 @@ export const Comment = ({ data, type, parentId }) => {
             </button>
           </div>
         ) : (
-          <div>
+          <div className="w-full overflow-hidden">
             {type == "reply" ? (
               <div>
                 <span className="font-semibold text-blue-500">
@@ -115,13 +116,26 @@ export const Comment = ({ data, type, parentId }) => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center gap-2 cursor-pointer">
+            <div
+              className="flex justify-center items-center gap-2 cursor-pointer"
+              onClick={() => setReplyMode({ num: data.id })}
+            >
               <img src={imgReply} />
               <span className="text-blue-800 font-bold">Reply</span>
             </div>
           )}
         </div>
       </div>
-    </>
+      {replyMode.num && (
+        <Reply
+          type={type}
+          parentId={parentId}
+          data={data}
+          newContent={newContent}
+          setNewContent={setNewContent}
+          setReplyMode={setReplyMode}
+        />
+      )}
+    </div>
   );
 };

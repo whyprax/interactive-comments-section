@@ -12,7 +12,7 @@ export const Comments = () => {
         <>
           <Comment key={index} data={comment} type="comments" />
 
-          <div className="border-l-2 -mr-14 ml-20 pl-12 border-gray-300">
+          <div className="border-l-2 pl-16 w-full border-gray-300">
             {comment?.replies?.map((reply, index) => (
               <>
                 <Comment

@@ -39,9 +39,15 @@ export const commentSlice = createSlice({
         );
       }
     },
+    replyComment: (state, action) => {
+      state.value
+        .filter((comment) => comment.id === action.payload.parentId)[0]
+        .replies.push(action.payload);
+    },
   },
 });
 
-export const { addComment, deleteComment, editComment } = commentSlice.actions;
+export const { addComment, deleteComment, editComment, replyComment } =
+  commentSlice.actions;
 export const selectComment = (state) => state.comment.value;
 export default commentSlice.reducer;
